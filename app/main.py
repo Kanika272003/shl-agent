@@ -47,7 +47,6 @@ def chat(payload: ChatRequest):
 
     intent = detect_intent(latest_message)
 
-    # Clarification intent
     if intent == "clarify":
         return ChatResponse(
             reply="Please tell me the job role, required skills, and experience level.",
@@ -55,14 +54,9 @@ def chat(payload: ChatRequest):
             end_of_conversation=False,
         )
 
-    # Recommendation intent
     if intent == "recommend":
         recommendations = recommend_assessments(conversation_context)
-
-        llm_reply = generate_llm_response(
-            latest_message,
-            recommendations
-        )
+        llm_reply = generate_llm_response(latest_message, recommendations)
 
         return ChatResponse(
             reply=llm_reply,
@@ -70,10 +64,8 @@ def chat(payload: ChatRequest):
             end_of_conversation=False,
         )
 
-    # Refine intent
     if intent == "refine":
         existing_recommendations = recommend_assessments(conversation_context)
-
         refined = refine_recommendations(
             latest_message,
             existing_recommendations
@@ -85,20 +77,18 @@ def chat(payload: ChatRequest):
             end_of_conversation=False,
         )
 
-    # Compare intent
     if intent == "compare":
-       recommendations = recommend_assessments(conversation_context)
+        recommendations = recommend_assessments(conversation_context)
+        comparison = compare_assessments(recommendations)
 
-    comparison = compare_assessments(recommendations)
+        return ChatResponse(
+            reply=comparison,
+            recommendations=recommendations,
+            end_of_conversation=False,
+        )
 
     return ChatResponse(
-        reply=comparison,
-        recommendations=recommendations,
-        end_of_conversation=False,
-    )
-
-    return ChatResponse(
-        reply="Please tell me more about the role.",
+        reply="Please tell me more about the role, skills, or experience.",
         recommendations=[],
         end_of_conversation=False,
     )
