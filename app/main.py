@@ -77,28 +77,34 @@ def chat(payload: ChatRequest):
             end_of_conversation=False,
         )
 
-   # Compare intent
+    # Compare intent
     if intent == "compare":
-       compare_context = conversation_context.lower()
+        compare_context = conversation_context.lower()
 
-    compare_words = [
-        "compare",
-        "comparison",
-        "recommended",
-        "assessments",
-        "assessment",
-    ]
+        compare_words = [
+            "compare",
+            "comparison",
+            "recommended",
+            "assessments",
+            "assessment",
+        ]
 
-    for word in compare_words:
-        compare_context = compare_context.replace(word, "")
+        for word in compare_words:
+            compare_context = compare_context.replace(word, "")
 
-    recommendations = recommend_assessments(compare_context)
+        recommendations = recommend_assessments(compare_context)
+        comparison = compare_assessments(recommendations)
 
-    comparison = compare_assessments(recommendations)
+        comparison_recs = recommendations[:2]
+
+        return ChatResponse(
+            reply=comparison,
+            recommendations=comparison_recs,
+            end_of_conversation=False,
+        )
 
     return ChatResponse(
-        reply=comparison,
-        recommendations=recommendations,
+        reply="Sorry, I couldn't understand your request.",
+        recommendations=[],
         end_of_conversation=False,
     )
-    
