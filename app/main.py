@@ -56,7 +56,10 @@ def chat(payload: ChatRequest):
 
     if intent == "recommend":
         recommendations = recommend_assessments(conversation_context)
-        llm_reply = generate_llm_response(latest_message, recommendations)
+        llm_reply = generate_llm_response(
+            latest_message,
+            recommendations
+        )
 
         return ChatResponse(
             reply=llm_reply,
@@ -66,6 +69,7 @@ def chat(payload: ChatRequest):
 
     if intent == "refine":
         existing_recommendations = recommend_assessments(conversation_context)
+
         refined = refine_recommendations(
             latest_message,
             existing_recommendations
