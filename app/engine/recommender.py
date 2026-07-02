@@ -6,6 +6,7 @@ from app.catalog.loader import load_catalog
 
 catalog = load_catalog()
 
+# Weights for scoring
 WEIGHT_NAME = 5
 WEIGHT_KEYS = 3
 WEIGHT_DESCRIPTION = 1
@@ -43,8 +44,6 @@ SYNONYMS = {
     "behavior": "personality",
     "reasoning": "cognitive",
     "aptitude": "cognitive",
-    "scenario": "situational",
-    "scenarios": "situational",
     "judgement": "situational",
     "judgment": "situational",
 }
@@ -149,6 +148,40 @@ def _score_entry(query_clean: str, query_words: List[str], entry: Dict[str, Any]
     return score
 
 
+def _filter_diverse_results(scored_entries, top_k):
+    selected = []
+    seen_categories = set()
+
+    for _, entry in scored_entries:
+        full_text = (
+            entry.get("name", "") + " " +
+            " ".join(entry.get("keys", [])) + " " +
+            entry.get("description", "")
+        ).lower()
+
+        if "python" in full_text:
+            category = "python"
+        elif "sql" in full_text or "database" in full_text or "oracle" in full_text:
+            category = "database"
+        elif "cognitive" in full_text or "reasoning" in full_text:
+            category = "cognitive"
+        elif "personality" in full_text or "opq" in full_text:
+            category = "personality"
+        elif "simulation" in full_text or "automata" in full_text:
+            category = "simulation"
+        else:
+            category = entry.get("name", "").lower()
+
+        if category not in seen_categories:
+            selected.append(entry)
+            seen_categories.add(category)
+
+        if len(selected) >= top_k:
+            break
+
+    return selected
+
+
 def recommend_assessments(query: str, top_k: int = 5):
     if not query or not query.strip():
         return []
@@ -174,9 +207,11 @@ def recommend_assessments(query: str, top_k: int = 5):
         )
     )
 
+    filtered_entries = _filter_diverse_results(scored, top_k)
+
     recommendations = []
 
-    for _, entry in scored[:top_k]:
+    for entry in filtered_entries:
         recommendations.append(
             {
                 "name": entry.get("name", ""),
