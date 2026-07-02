@@ -11,6 +11,14 @@ def refine_recommendations(message: str, recommendations: list):
             if "sql" not in rec["name"].lower()
         ]
 
+    # Remove numerical assessments
+    if "remove numerical" in message or "numerical" in message:
+        recommendations = [
+            rec for rec in recommendations
+            if "numerical" not in rec["name"].lower()
+            and "numerical" not in rec["test_type"].lower()
+        ]
+
     # Keep only personality assessments
     if "personality" in message:
         recommendations = [
