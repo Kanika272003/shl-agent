@@ -20,7 +20,9 @@ app = FastAPI(
     title="SHL Assessment Recommender",
     version="0.1.0"
 )
-
+@app.get("/")
+def root():
+    return {"message": "SHL Assessment Recommender API is running"}
 
 @app.get("/health")
 def health():
