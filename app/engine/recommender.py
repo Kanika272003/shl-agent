@@ -13,7 +13,7 @@ WEIGHT_DESCRIPTION = 1
 PHRASE_BONUS_NAME = 6
 PHRASE_BONUS_DESCRIPTION = 2
 
-MIN_SCORE = 1.5
+MIN_SCORE = 4.0
 
 STOPWORDS = {
     "a", "an", "the", "and", "or", "for", "of", "to", "in", "on", "with",
@@ -149,7 +149,7 @@ def _score_entry(query_clean: str, query_words: List[str], entry: Dict[str, Any]
     return score
 
 
-def recommend_assessments(query: str, top_k: int = 10):
+def recommend_assessments(query: str, top_k: int = 5):
     if not query or not query.strip():
         return []
 
