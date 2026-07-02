@@ -7,16 +7,12 @@ from app.engine.refiner import refine_recommendations
 from app.engine.llm import generate_llm_response
 from app.engine.compare import compare_assessments
 
-MAX_TURNS = 8
-
 
 def build_context(messages):
     user_messages = []
-
     for msg in messages:
         if msg.role == "user":
             user_messages.append(msg.content)
-
     return " ".join(user_messages)
 
 
@@ -92,7 +88,7 @@ def chat(payload: ChatRequest):
         )
 
     return ChatResponse(
-        reply="Please tell me more about the role, skills, or experience.",
+        reply="Please tell me more about the role.",
         recommendations=[],
         end_of_conversation=False,
     )
